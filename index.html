@@ -27,8 +27,8 @@ pre {
 var log = (function () {
     var logger = document.getElementById("log"),
         empty = function (ele) {
-            while (ele.children.length) {
-                ele.removeChild(ele.children[0]);
+            while (ele.childNodes.length) {
+                ele.removeChild(ele.childNodes[0]);
             }
             return ele;
         };
