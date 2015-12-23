@@ -1,19 +1,6 @@
 var schedule = function schedule (wrap, callback, data) {
     var callout = function schedule$_callout (result) {
-
             callback(schedule.transcode(result));
-
-            // TODO: send info
-            // setTimeout(function () {
-            //     wrap.classList.remove("loading");
-            //     wrap.classList.add("loaded");
-            //     setTimeout(function () {
-            //         wrap.classList.remove("loaded");
-            //     }, 1000);
-            // }, 2000);
-        },
-        loading = function schedule$_loading () {
-            // wrap.classList.add("loading");
         },
         dd = function double_digit (num) {
             return (num < 10 ? "0" : "") + num;
@@ -70,7 +57,7 @@ var schedule = function schedule (wrap, callback, data) {
                 data: schedule.transcodeBack(data)
             })
             .append(wrap)
-            .listen(callout, loading);
+            .listen(callout);
 };
 
 schedule.timeslots = {

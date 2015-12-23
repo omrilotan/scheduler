@@ -9,6 +9,7 @@
         <meta name="googlebot" content="noindex" />
         <meta name="robots" content="noindex" />
         <link rel="stylesheet" href="checkerboard.css" />
+        <link rel="stylesheet" href="source.css" />
         <style>
 pre {
     white-space: pre-wrap;
@@ -18,12 +19,48 @@ pre {
         </style>
     </head>
     <body>
+        <a href="https://github.com/omrilotan/scheduler" class="source"></a>
         <div id="schedule" class="checkerboard"></div>
         <pre id="log"></pre>
         <script src="checkerboard.js"></script>
         <script src="schedule.js"></script>
         <script>
-// schedule(wrap, callback, data);
+var dd = function dd (num) {
+    return num < 10 ? '0' + num : num;
+};
+var interpolate = function (string, obj) {
+    return string.replace(/\${(.*)\s*}/g,
+        function (a, b) {
+            var r = obj[b.trim()];
+            return typeof r === 'string' || typeof r === 'number' ? r : a;
+        }
+    );
+};
+var templatise = function (string, obj) {
+    string.match(/(\$\{.*?\})/gmi).forEach(function (item) {
+        var resolved = obj[item.replace(/\$\{\s*|\s*\}/gmi, "").trim()];
+
+        if (['string', 'number', 'boolean'].indexOf(typeof resolved) !== -1) {
+            string = string.replace(item, resolved.toString());
+        } else if (resolved === null || resolved === undefined) {
+            string = string.replace(item, "");
+        }
+    });
+    return string;
+};
+
+var formatDate = function formatDate (date) {
+    return templatise("${year}-${month}-${day} ${hours}:${min}:${sec}", {
+        year : date.getFullYear(),
+        month: dd(date.getMonth() + 1),
+        day  : dd(date.getDate()),
+        hours: dd(date.getHours()),
+        min  : dd(date.getMinutes()),
+        sec  : dd(date.getSeconds())
+    });
+};
+
+
 var log = (function () {
     var logger = document.getElementById("log"),
         empty = function (ele) {
@@ -38,18 +75,28 @@ var log = (function () {
     };
 }());
 
-schedule(document.getElementById("schedule"),
-        function scheduleChanged (days) {
+(function () {
+    var element = document.getElementById("schedule");
+    schedule(element,
+            function (days) {
 
-            // Schedule change callback
-            log("SAVED:\n" + JSON.stringify(days));
+                // Simulate async saving
+                element.classList.add("loading");
+                log("Saving...");
 
-            localStorage.setItem("schedule", JSON.stringify(days));
+                setTimeout(function() {
+                    element.classList.remove("loading");
 
-        }, (function () {
-            var stored = localStorage.getItem("schedule");
-            return stored ? JSON.parse(stored) : [];
-        }()));
+                    // Schedule change callback
+                    log("Saved to localStorage on " + formatDate(new Date()) + "\n\n" + JSON.stringify(days));
+                    localStorage.setItem("schedule", JSON.stringify(days));
+                }, 2000);
+
+            }, (function () {
+                var stored = localStorage.getItem("schedule");
+                return stored ? JSON.parse(stored) : [];
+            }()));
+}());
         </script>
     </body>
 </html>

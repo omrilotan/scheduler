@@ -163,10 +163,9 @@ var checkerboard = (function __checkerboard__  () {
                 }
             }
         },
-        listen: function Checkerboard$listen (callback, loading) {
+        listen: function Checkerboard$listen (callback) {
             var that = this;
             that.callback = callback;
-            that.loading = loading;
 
             [
                 "mousedown",
@@ -299,7 +298,6 @@ var checkerboard = (function __checkerboard__  () {
             if (that.editMode === false) {
                 this.timer = setTimeout(function callbackTimer () {
                     if (typeof that.callback === "function") {
-                        that.loading();
                         that.callback(result);
                     }
                 }, timelimit);
